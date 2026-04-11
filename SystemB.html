@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard · Splitwise</title>
+<link href="https://fonts.googleapis.com/css?family=Lato:400,400italic,700" rel="stylesheet">
+<!-- LOGGING: <script src="logging.js"></script> -->
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;padding:0;font-family:'Lato','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#333;background:#eee;min-width:980px}
+a{color:#0088cc;text-decoration:none}a:hover{text-decoration:underline}
+ul,li{list-style:none;margin:0;padding:0}h1,h2,h3{margin:0;padding:0}
+img{border:0;vertical-align:middle}button,input,textarea{font-family:inherit}
+
+/* NAVBAR */
+.navbar-fixed-top{position:fixed;top:0;left:0;right:0;z-index:1030}
+.navbar-inner{background:linear-gradient(to bottom,#3e4251,#343746);border-bottom:1px solid #282b35;box-shadow:0 1px 4px rgba(0,0,0,.25);height:50px}
+.navbar-inner .container{width:960px;margin:0 auto;padding:0 10px;display:flex;align-items:center;justify-content:space-between;height:50px}
+.brand{display:flex;align-items:center}.brand img#logo{height:26px}
+.nav.pull-right{display:flex;align-items:center}
+.dropdown{position:relative}
+.dropdown-toggle{display:flex;align-items:center;gap:7px;color:#c9c9c9;font-size:14px;padding:0 10px;height:50px;cursor:pointer}
+.dropdown-toggle:hover{color:#fff;text-decoration:none}
+.dropdown-toggle img{width:28px;height:28px;border-radius:50%}
+b.caret{display:inline-block;width:0;height:0;border-top:4px solid;border-right:4px solid transparent;border-left:4px solid transparent;opacity:.6;margin-left:2px}
+.dropdown-menu-nav{display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:6px;box-shadow:0 5px 10px rgba(0,0,0,.2);min-width:160px;padding:5px 0;z-index:1050}
+.dropdown-menu-nav.open{display:block}
+.dropdown-menu-nav li a{display:block;padding:4px 20px;color:#333;font-size:13px;line-height:20px}
+.dropdown-menu-nav li a:hover{background:linear-gradient(to bottom,#0088cc,#0077b3);color:#fff;text-decoration:none}
+
+/* LAYOUT */
+#center_container{width:960px;margin:0 auto;padding-top:55px}
+#center_bars{display:flex;align-items:flex-start}
+
+/* LEFT SIDEBAR */
+#left_sidebar{width:210px;flex-shrink:0;padding:8px 0 0 0;max-height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden}
+#left_sidebar::-webkit-scrollbar{width:6px}
+#left_sidebar::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+.nav-link{display:block;padding:7px 12px;color:#666;font-size:14px;line-height:20px;border-radius:3px;border-left:4px solid transparent;text-decoration:none;cursor:pointer}
+.nav-link:hover{color:#333;background:#e0e0e0;text-decoration:none}
+.nav-link.active{color:#5bc5a7;font-weight:700;border-left-color:#5bc5a7;background:transparent}
+.nav-link .icon{display:inline-block;width:18px;text-align:center;margin-right:4px;font-size:13px}
+.sidebar-section-header{display:flex;justify-content:space-between;align-items:center;padding:14px 12px 5px;font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.3px;border-top:1px solid #ddd;margin-top:8px}
+.sidebar-section-header a{font-size:11px;color:#aaa;font-weight:normal;text-transform:none}
+.sidebar-section-header a:hover{color:#5bc5a7;text-decoration:none}
+.friend-link{display:block;padding:5px 12px;color:#666;font-size:14px;border-radius:3px;text-decoration:none;cursor:pointer}
+.friend-link:hover{background:#e0e0e0;color:#333;text-decoration:none}
+.friend-link .icon-user{color:#aaa;margin-right:4px;font-size:12px}
+.show-inactive{display:block;padding:8px 12px;font-size:12px;color:#aaa;font-style:italic;line-height:16px}
+.sidebar-invite-header{background:#5bc5a7;color:#fff;border:1px solid #39a385;font-weight:700;font-size:14px;padding:5px 8px;margin:18px 5px 0 5px}
+.sidebar-invite-box{margin:0 5px;border:1px solid #ccc;border-top:none;padding:8px;background:#fff}
+.sidebar-invite-box input[type="email"]{width:100%;padding:5px 8px;border:1px solid #ccc;border-radius:3px;font-size:13px;color:#555;margin-bottom:6px}
+.btn-send-invite{font-size:12px;padding:3px 8px;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;color:#333;cursor:pointer}
+
+/* CENTER COLUMN */
+#center_column{flex:1;min-width:0;margin:0 10px}
+.page-header{background:#fff;border:1px solid #ddd;border-radius:5px 5px 0 0;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.page-header h1{font-size:28px;font-weight:700;color:#333}
+.page-header .actions{display:flex;gap:8px}
+.btn{display:inline-block;padding:8px 16px;font-size:15px;font-weight:700;border:none;border-radius:5px;cursor:pointer;text-align:center;text-decoration:none;line-height:22px}
+.btn:hover{text-decoration:none}
+.btn-orange{background:#ff652f;color:#fff;border:1px solid #e05525}
+.btn-orange:hover{background:#e85a28;color:#fff}
+.btn-mint{background:#5bc5a7;color:#fff;border:1px solid #44a88d}
+.btn-mint:hover{background:#4eb89b;color:#fff}
+.balance-summary{display:flex;background:#fff;border:1px solid #ddd;border-top:none}
+.balance-block{flex:1;text-align:center;padding:10px 10px 12px;border-right:1px solid #ddd}
+.balance-block:last-child{border-right:none}
+.balance-block .label{font-size:11px;color:#999;text-transform:lowercase}
+.balance-block .value{font-size:18px;font-weight:700;margin-top:1px}
+.balance-block .value.positive{color:#5bc5a7}
+.balance-block .value.negative{color:#ff652f}
+.balance-block .value.neutral{color:#999}
+.owe-owed-header{background:#fff;border:1px solid #ddd;border-top:none;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:relative}
+.owe-owed-header h2{font-size:13px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
+.toggle-view{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;border:1px solid #ccc;border-radius:3px;overflow:hidden}
+.toggle-view button{padding:4px 10px;font-size:12px;color:#666;background:#f9f9f9;border:none;border-right:1px solid #ccc;cursor:pointer;display:flex;align-items:center;gap:4px}
+.toggle-view button:last-child{border-right:none}
+.toggle-view button.active{background:#fff;color:#333;font-weight:700;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.owe-owed-body{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 5px 5px;padding:15px 20px 30px;min-height:350px}
+.owe-owed-body .view-container{display:flex}
+.owe-col{flex:1;padding-right:20px}
+.owed-col{flex:1;padding-left:20px;border-left:1px solid #eee}
+.balance-row{display:flex;align-items:center;padding:8px 0}
+.balance-row+.balance-row{border-top:1px solid #f3f3f3}
+.avatar-envelope{width:36px;height:36px;border-radius:50%;background:#ddd;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px}
+.avatar-envelope svg{width:18px;height:18px;fill:#aaa}
+.balance-row .friend-info{flex:1}
+.balance-row .friend-name{font-size:14px;font-weight:700;color:#333}
+.balance-row .friend-balance{font-size:12px;color:#5bc5a7}
+.balance-row .friend-balance.owe-color{color:#ff652f}
+.balance-row .friend-balance .amt{font-weight:700}
+
+/* CHART */
+.chart-bar{display:flex;align-items:center;margin-bottom:6px;border-radius:3px;padding:6px 10px;color:#fff;font-size:13px}
+.chart-bar.green{background:#5bc5a7}
+.chart-bar.orange{background:#ff652f}
+.chart-bar .bar-name{font-weight:700;margin-right:auto}
+.chart-bar .bar-amt{white-space:nowrap}
+.chart-col.left-chart .chart-bar{margin-left:auto;flex-direction:row-reverse}
+.chart-col.left-chart .chart-bar .bar-name{margin-right:0;margin-left:auto}
+.chart-col.left-chart .chart-bar .bar-amt{margin-right:8px}
+
+/* GROUP/FRIEND DETAIL PAGE */
+.detail-header{background:#fff;border:1px solid #ddd;border-radius:5px 5px 0 0;padding:16px 20px;display:flex;align-items:center;gap:14px}
+.detail-header .group-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex-shrink:0}
+.detail-header .group-info{flex:1}
+.detail-header .group-info h1{font-size:24px;font-weight:700;color:#333}
+.detail-header .group-info .sub{font-size:13px;color:#999}
+.detail-body{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 5px 5px;padding:40px 20px;text-align:center;min-height:300px}
+.detail-body h2{font-size:22px;font-weight:700;color:#333;margin-bottom:8px}
+.detail-body p{font-size:14px;color:#aaa}
+.detail-right{padding:8px 0}
+.detail-right h3{font-size:12px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px}
+.detail-right .balance-item{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.detail-right .balance-item .av{width:32px;height:32px;border-radius:50%;background:#ddd;display:flex;align-items:center;justify-content:center}
+.detail-right .balance-item .av svg{width:16px;height:16px;fill:#999}
+.detail-right .settled{font-size:13px;color:#999}
+.detail-right .view-link{display:block;margin-top:12px;color:#5bc5a7;font-size:13px}
+
+/* Expense list items on detail pages */
+.expense-list-item{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid #f0f0f0;text-align:left}
+.expense-list-item .exp-icon{width:36px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:16px;flex-shrink:0}
+.expense-list-item .exp-info{flex:1}
+.expense-list-item .exp-desc{font-weight:700;font-size:14px;color:#333}
+.expense-list-item .exp-meta{font-size:12px;color:#999}
+.expense-list-item .exp-amt{text-align:right}
+.expense-list-item .exp-amt .paid{font-size:13px;color:#999}
+.expense-list-item .exp-amt .lent{font-size:13px;color:#5bc5a7;font-weight:700}
+
+/* RIGHT SIDEBAR */
+#right_sidebar{width:210px;flex-shrink:0;padding:0 0 0 5px}
+#right_sidebar_content h2{font-size:12px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+#right_sidebar_content .desc{font-size:13px;color:#555;line-height:18px;margin-bottom:10px}
+.badge-link{display:block;margin:8px 0}
+.badge-link svg{width:175px;height:auto;display:block}
+
+/* ============ MODAL ============ */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:2000;justify-content:center;align-items:flex-start;padding-top:80px}
+.modal-overlay.open{display:flex}
+.modal-container{display:flex;align-items:flex-start}
+.modal-primary{width:420px;padding:14px;background:#fff;border-radius:6px;box-shadow:0 5px 30px rgba(0,0,0,.3);overflow:visible;position:relative;z-index:2}
+.modal-header-bar{background:#5bc5a7;color:#fff;padding:13px 18px;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-radius:6px 6px 0 0}
+.modal-header-bar .close-x{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1;padding:0;opacity:.85}
+.modal-header-bar .close-x:hover{opacity:1}
+.modal-footer-bar{padding:14px 18px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #eee;border-radius:0 0 6px 6px}
+.btn-cancel-m{padding:8px 22px;font-size:14px;background:#fff;border:1px solid #ccc;border-radius:4px;cursor:pointer;color:#333}
+.btn-save-m{padding:8px 22px;font-size:14px;background:#5bc5a7;border:1px solid #44a88d;border-radius:4px;cursor:pointer;color:#fff;font-weight:700}
+.with-row{padding:14px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:50px;position:relative}
+.with-row .lbl{font-size:14px;color:#333;white-space:nowrap}
+.with-row .lbl strong{font-weight:700}
+.with-row input.with-input{flex:1;border:none;outline:none;font-size:14px;color:#333;min-width:100px;padding:4px 0}
+.with-row input.with-input::placeholder{color:#aaa}
+.user-chip{display:inline-flex;align-items:center;gap:5px;background:#f0f0f0;border:1px solid #d5d5d5;border-radius:4px;padding:3px 8px 3px 4px;font-size:13px;color:#333;margin:2px 4px 2px 0}
+.user-chip .chip-avatar{width:20px;height:20px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.user-chip .chip-avatar svg{width:14px;height:14px}
+.user-chip .chip-x{background:none;border:none;cursor:pointer;color:#999;font-size:15px;padding:0 0 0 3px;line-height:1}
+#chipArea{display:flex;flex-wrap:wrap;align-items:center}
+.autocomplete-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-top:none;box-shadow:0 4px 12px rgba(0,0,0,.15);max-height:220px;overflow-y:auto;z-index:100;border-radius:0 0 4px 4px}
+.autocomplete-dropdown.open{display:block}
+.ac-section-label{padding:6px 14px;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;background:#f7f7f7;border-bottom:1px solid #eee}
+.ac-item{padding:7px 14px;cursor:pointer;font-size:13px;color:#333;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f5f5f5}
+.ac-item:hover{background:#e8f7f2}
+
+/* Expense form with side-by-side icon+fields */
+.expense-form-area{display:none;padding:20px 18px 14px}
+.expense-form-area.visible{display:block}
+.expense-top-row{display:flex;align-items:flex-start;gap:14px}
+.cat-icon-box{width:68px;height:68px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:28px;border:1px solid #ddd;background:#f5f5f5;transition:background .2s}
+.cat-icon-box:hover{opacity:.85}
+.cat-icon-box .cat-emoji{font-size:28px}
+.expense-fields{flex:1;min-width:0}
+.desc-field{width:100%;border:none;border-bottom:1px dashed #ccc;outline:none;font-size:18px;color:#333;padding:4px 0 6px;background:transparent}
+.desc-field::placeholder{color:#bbb}
+.desc-field:focus{border-bottom-color:#5bc5a7}
+.amt-row{display:flex;align-items:baseline;gap:2px;margin-top:4px}
+.amt-row .dollar-sign{font-size:20px;color:#bbb}
+.amt-row .amt-field{border:none;border-bottom:1px dashed #ccc;outline:none;font-size:34px;color:#bbb;width:120px;font-weight:300;background:transparent}
+.amt-row .amt-field:focus{color:#333;border-bottom-color:#5bc5a7}
+.split-line{font-size:14px;color:#555;margin:14px 0 3px;text-align:center}
+.pill-link{display:inline-block;padding:1px 8px;border:1px solid #5bc5a7;border-radius:3px;color:#5bc5a7;font-size:13px;cursor:pointer;background:transparent}
+.per-person-text{font-size:13px;color:#999;margin-bottom:16px;text-align:center}
+.bottom-btns{display:flex;gap:10px;justify-content:center}
+.bottom-oval{flex:1;max-width:170px;padding:7px 14px;border:1px solid #ddd;border-radius:20px;background:#fff;font-size:13px;color:#666;cursor:pointer;text-align:center}
+.bottom-oval:hover{background:#fafafa}
+.bottom-oval.highlight{border-color:#e6c830;background:linear-gradient(to bottom,#fef9e0,#fdf3c0);color:#444}
+
+/* Secondary panels */
+.modal-secondary-panel{display:none;padding:14px;width:300px;background:#fff;border-radius:6px;box-shadow:0 5px 30px rgba(0,0,0,.3);overflow:hidden;margin-left:-3px;z-index:1}
+.modal-secondary-panel.open{display:block}
+.sec-header{background:#5bc5a7;color:#fff;padding:13px 18px;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.sec-header .close-x{background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1;padding:0;opacity:.85}
+.cat-list{max-height:420px;overflow-y:auto}
+.cat-item{display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:14px;color:#333;background:#fff}
+.cat-item:hover{background:#f7f7f7}
+.cat-item.parent-open{background:#f2f2f2;font-weight:700}
+.cat-item .chev{color:#bbb;font-size:18px}
+.cat-sub{display:none;padding:8px 18px 8px 36px;font-size:13px;color:#555;border-bottom:1px solid #f5f5f5;cursor:pointer;background:#fafafa}
+.cat-sub:hover{background:#f0f0f0}
+.cat-sub.show{display:block}
+.notes-inner{padding:18px}
+.notes-inner label{font-size:14px;color:#333;display:block;margin-bottom:8px}
+.notes-inner input[type="file"]{margin-bottom:18px;font-size:13px}
+.notes-inner textarea{width:100%;height:150px;border:1px solid #ddd;border-radius:4px;padding:10px;font-size:14px;resize:vertical}
+.notes-inner textarea::placeholder{color:#aaa}
+.notes-foot{padding:12px 18px;display:flex;justify-content:flex-end;border-top:1px solid #eee}
+.btn-done-m{padding:8px 28px;font-size:14px;background:#5bc5a7;border:1px solid #44a88d;border-radius:4px;cursor:pointer;color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar-fixed-top"><div class="navbar-inner"><div class="container">
+    <a class="brand" href="#" onclick="navTo('dashboard');return false"><img id="logo" src="https://assets.splitwise.com/assets/core/logo-wordmark-horizontal-white-short-4fc9ee471a7c98b02cc61d8bc5bfb05d53e90ef5b3984640d3fdeafa523683f0.svg" alt="Splitwise"></a>
+    <ul class="nav pull-right"><li class="dropdown" id="userDropdown">
+        <a href="#" class="dropdown-toggle" onclick="toggleMenu(event)">
+            <img src="https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=1024x1024&w=is&k=20&c=y4FFqpMLolCvEqoxlr4oypQqhAL1ta0ojXUnOofQXHk=" alt="">Test User<b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu-nav" id="userMenuDD">
+            <li><a href="#">Your account</a></li><li><a href="#">Create a group</a></li>
+            <li><a href="#">Fairness calculators</a></li><li><a href="#">Contact support</a></li><li><a href="#">Log out</a></li>
+        </ul>
+    </li></ul>
+</div></div></div>
+
+<div id="center_container"><div id="center_bars">
+    <div id="left_sidebar">
+        <a class="nav-link active" id="nav-dashboard" onclick="navTo('dashboard')"><span class="icon">📊</span> Dashboard</a>
+        <a class="nav-link" id="nav-activity" onclick="navTo('dashboard')"><span class="icon">🚩</span> Recent activity</a>
+        <a class="nav-link" onclick="navTo('dashboard')"><span class="icon">≡</span> All expenses</a>
+        <div class="sidebar-section-header">Groups <a href="#">+ add</a></div>
+        <div id="sidebarGroups"></div>
+        <div class="sidebar-section-header">Friends <a href="#">+ add</a></div>
+        <div id="sidebarFriends"></div>
+        <a href="#" class="show-inactive">Hiding accounts settled for more than 30 days. Show »</a>
+        <div class="sidebar-invite-header">Invite friends</div>
+        <div class="sidebar-invite-box"><input type="email" placeholder="Enter an email address"><button class="btn-send-invite">Send invite</button></div>
+    </div>
+    <div id="center_column"></div>
+    <div id="right_sidebar"><div id="right_sidebar_content"></div></div>
+</div></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal-container">
+    <div class="modal-primary">
+        <div class="modal-header-bar">Add an expense<button class="close-x" onclick="closeModal()">&times;</button></div>
+        <div class="modal-body-area">
+            <div class="with-row" id="withRow">
+                <span class="lbl">With <strong>you</strong> and:</span>
+                <span id="chipArea"></span>
+                <input type="text" class="with-input" id="withField" placeholder="Enter names or email addresses" autocomplete="off">
+                <div class="autocomplete-dropdown" id="acDropdown"></div>
+            </div>
+            <div class="expense-form-area" id="expForm">
+                <div class="expense-top-row">
+                    <div class="cat-icon-box" id="catIconBox" onclick="openCatPanel()" title="Choose a category">
+                        <span class="cat-emoji" id="catEmoji">📄</span>
+                    </div>
+                    <div class="expense-fields">
+                        <input type="text" class="desc-field" id="descField" placeholder="Enter a description">
+                        <div class="amt-row">
+                            <span class="dollar-sign">$</span>
+                            <input type="text" class="amt-field" id="amtField" value="0.00">
+                        </div>
+                    </div>
+                </div>
+                <div class="split-line">Paid by <span class="pill-link">you</span> and split <span class="pill-link">equally</span>.</div>
+                <div class="per-person-text" id="perPersonText">($0.00/person)</div>
+                <div class="bottom-btns">
+                    <button class="bottom-oval" id="dateBtn">April 11, 2026</button>
+                    <button class="bottom-oval" id="notesBtn" onclick="openNotesPanel()">Add image/notes</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer-bar">
+            <button class="btn-cancel-m" onclick="closeModal()">Cancel</button>
+            <button class="btn-save-m" onclick="saveExpense()">Save</button>
+        </div>
+    </div>
+    <div class="modal-secondary-panel" id="catPanel">
+        <div class="sec-header">Choose a category<button class="close-x" onclick="closeCatPanel()">&times;</button></div>
+        <div class="cat-list" id="catList"></div>
+    </div>
+    <div class="modal-secondary-panel" id="notesPanel">
+        <div class="sec-header">Add image/notes<button class="close-x" onclick="closeNotesPanel()">&times;</button></div>
+        <div class="notes-inner"><label>Attach an image or PDF:</label><input type="file" accept="image/*,.pdf"><textarea placeholder="Add notes"></textarea></div>
+        <div class="notes-foot"><button class="btn-done-m" onclick="closeNotesPanel()">Done</button></div>
+    </div>
+</div>
+</div>
+
+<script>
+// ============ DATA ============
+var GROUPS=['Apartment 4B','Japan Trip 2026','Household Bills','Bali Getaway','Friday Dinners','Office Snacks','Seoul Weekend','Condo Utilities','Brunch Club','Europe Backpacking','Wedding Fund','Game Night Crew','Bangkok Trip','Gym Membership','Potluck Group','Ski Trip 2026','Streaming Subs','Taco Tuesdays','Road Trip CA','Book Club Expenses'];
+var GROUP_ICONS=['🏠','✈️','🏠','✈️','🍕','🏠','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠'];
+var GROUP_COLORS=['#ff652f','#5bc5a7','#8e5ea2','#3cba9f','#e8c3b9','#c45850','#ff652f','#5bc5a7','#8e5ea2','#3cba9f','#e8c3b9','#c45850','#ff652f','#5bc5a7','#8e5ea2','#3cba9f','#e8c3b9','#c45850','#ff652f','#5bc5a7'];
+var FRIENDS=['Alex Chen','Sarah Kim','Marcus Johnson','Priya Patel','David Wong','Emily Tanaka','James Liu','Mei Lin','Ryan O\'Brien','Aisha Rahman','Carlos Rivera','Hannah Lee','Tomoko Sato','Daniel Park','Olivia Nguyen','Ben Martinez','Chloe Zhang','Kevin Nakamura','Sophie Tan','Ravi Sharma','Mia Thompson','Jun Watanabe','Natalie Cruz','Tyler Huang','Jasmine Ali','Ethan Choi','Rachel Ong','Michael Santos','Yuki Hayashi','Grace Lim','Arjun Mehta','Lily Fernandez','Noah Takahashi','Zara Hussein','Lucas Pereira','Emma Sullivan','Hiroshi Yamamoto','Fatima Yusuf','Derek Chang','Ava Reyes','Vikram Singh','Isabel Torres','Sean Murphy','Nina Zhao','Chris Andersen'];
+var YOU_OWE=[{name:'Emily Tanaka',amt:32.50},{name:'Ryan O\'Brien',amt:28.00},{name:'Mei Lin',amt:7.25},{name:'Carlos Rivera',amt:45.00},{name:'Tomoko Sato',amt:12.80},{name:'Ben Martinez',amt:19.50},{name:'Sophie Tan',amt:8.75},{name:'Jun Watanabe',amt:55.00},{name:'Tyler Huang',amt:14.30},{name:'Ethan Choi',amt:22.00},{name:'Michael Santos',amt:6.50},{name:'Hiroshi Yamamoto',amt:31.25},{name:'Derek Chang',amt:9.90},{name:'Vikram Singh',amt:17.60},{name:'Sean Murphy',amt:41.00}];
+var YOU_ARE_OWED=[{name:'Alex Chen',amt:45.00},{name:'Sarah Kim',amt:22.75},{name:'Marcus Johnson',amt:15.00},{name:'Priya Patel',amt:10.00},{name:'David Wong',amt:38.50},{name:'James Liu',amt:27.30},{name:'Aisha Rahman',amt:18.00},{name:'Hannah Lee',amt:52.75},{name:'Daniel Park',amt:11.20},{name:'Olivia Nguyen',amt:33.00},{name:'Chloe Zhang',amt:8.50},{name:'Kevin Nakamura',amt:19.90},{name:'Ravi Sharma',amt:42.00},{name:'Mia Thompson',amt:7.15},{name:'Natalie Cruz',amt:29.80},{name:'Jasmine Ali',amt:16.50},{name:'Rachel Ong',amt:24.00},{name:'Yuki Hayashi',amt:13.75},{name:'Grace Lim',amt:36.25},{name:'Arjun Mehta',amt:21.00},{name:'Lily Fernandez',amt:5.80},{name:'Noah Takahashi',amt:48.60}];
+
+var CATEGORIES=[
+    {name:'Entertainment',emoji:'🎬',subs:['Games','Movies','Music','Sports','Other'],colors:['#ece0f7','#d9c2ef','#c9a5e6','#b888dd','#a06bd4']},
+    {name:'Food and drink',emoji:'🍽️',subs:['Dining out','Groceries','Liquor','Other'],colors:['#d6ecdc','#b8dfc3','#9cd1aa','#80c491']},
+    {name:'Home',emoji:'🏠',subs:['Electronics','Furniture','Household supplies','Maintenance','Mortgage','Pets','Rent','Services','Other'],colors:['#f2efbf','#ede9a0','#e4dd78','#dbd060','#d2c448','#c9b830','#c0ac18','#b7a000','#ae9400']},
+    {name:'Life',emoji:'🌱',subs:['Childcare','Clothing','Education','Gifts','Insurance','Medical expenses','Taxes','Other'],colors:['#ffddd1','#ffcbb8','#ffb99f','#ffa786','#ff956d','#ff8354','#ff713b','#ff5f22']},
+    {name:'Transportation',emoji:'🚗',subs:['Bicycle','Bus/train','Car','Gas/fuel','Hotel','Parking','Plane','Taxi','Other'],colors:['#f2c9d4','#e8adbf','#de91aa','#d47595','#ca5980','#c03d6b','#b62156','#ac0541','#a2002c']},
+    {name:'Uncategorized',emoji:'📦',subs:['General'],colors:['#e6e8ee']},
+    {name:'Utilities',emoji:'🔧',subs:['Cleaning','Electricity','Heat/gas','Trash','TV/Phone/Internet','Water','Other'],colors:['#c8e8f1','#add9e8','#92cadf','#77bbd6','#5caccd','#419dc4','#268ebb','#0b7fb2']}
+];
+
+// Category icon/color mapping for subcategories
+var CAT_ICON_MAP={};
+CATEGORIES.forEach(function(c){
+    c.subs.forEach(function(s,i){
+        CAT_ICON_MAP[c.name+'>'+s]={emoji:c.emoji,bg:c.colors[i%c.colors.length]};
+    });
+});
+
+// Saved expenses (persist until page refresh)
+var savedExpenses=[];
+
+var envSvg='<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>';
+
+// ============ CURRENT PAGE STATE ============
+var currentPage='dashboard';
+var currentPageData=null;
+
+// ============ SIDEBAR ============
+function buildSidebar(){
+    var gh='';GROUPS.forEach(function(g,i){gh+='<a class="friend-link" data-log="group-'+(i+1)+'" onclick="navTo(\'group\','+i+')"><span class="icon-user">'+GROUP_ICONS[i]+'</span> '+g+'</a>'});
+    document.getElementById('sidebarGroups').innerHTML=gh;
+    var fh='';FRIENDS.forEach(function(f,i){fh+='<a class="friend-link" data-log="friend-'+(i+1)+'" onclick="navTo(\'friend\','+i+')"><span class="icon-user">👤</span> '+f+'</a>'});
+    document.getElementById('sidebarFriends').innerHTML=fh;
+}
+
+function updateSidebarActive(){
+    document.querySelectorAll('#left_sidebar .nav-link, #left_sidebar .friend-link').forEach(function(el){el.classList.remove('active')});
+    if(currentPage==='dashboard') document.getElementById('nav-dashboard').classList.add('active');
+    else if(currentPage==='group'){
+        var links=document.querySelectorAll('#sidebarGroups .friend-link');
+        if(links[currentPageData]) links[currentPageData].classList.add('active');
+    } else if(currentPage==='friend'){
+        var links=document.querySelectorAll('#sidebarFriends .friend-link');
+        if(links[currentPageData]) links[currentPageData].classList.add('active');
+    }
+}
+
+// ============ PAGE NAVIGATION ============
+function navTo(page,data){
+    currentPage=page;currentPageData=data;
+    updateSidebarActive();
+    if(page==='dashboard') renderDashboard();
+    else if(page==='group') renderGroupPage(data);
+    else if(page==='friend') renderFriendPage(data);
+    logEvent('nav',page,data);
+}
+
+// ============ DASHBOARD PAGE ============
+function renderDashboard(){
+    document.title='Dashboard · Splitwise';
+    var totalOwe=YOU_OWE.reduce(function(s,x){return s+x.amt},0);
+    var totalOwed=YOU_ARE_OWED.reduce(function(s,x){return s+x.amt},0);
+    var net=totalOwed-totalOwe;
+    var maxOwe=Math.max.apply(null,YOU_OWE.map(function(x){return x.amt}));
+    var maxOwed=Math.max.apply(null,YOU_ARE_OWED.map(function(x){return x.amt}));
+
+    var h='<div class="page-header"><h1>Dashboard</h1><div class="actions"><a class="btn btn-orange" onclick="openModal(event)">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    h+='<div class="balance-summary"><div class="balance-block"><div class="label">total balance</div><div class="value '+(net>=0?'positive':'negative')+'">'+(net>=0?'+ ':'- ')+'$'+Math.abs(net).toFixed(2)+'</div></div>';
+    h+='<div class="balance-block"><div class="label">you owe</div><div class="value negative">$'+totalOwe.toFixed(2)+'</div></div>';
+    h+='<div class="balance-block"><div class="label">you are owed</div><div class="value positive">$'+totalOwed.toFixed(2)+'</div></div></div>';
+    h+='<div class="owe-owed-header"><h2>YOU OWE</h2><div class="toggle-view"><button class="active" id="listBtn" onclick="showList()">≡ view as list</button><button id="chartBtn" onclick="showChart()">📊 view chart</button></div><h2>YOU ARE OWED</h2></div>';
+    h+='<div class="owe-owed-body">';
+    // List
+    h+='<div class="view-container" id="listView" style="display:flex;width:100%"><div class="owe-col" id="oweListCol">';
+    YOU_OWE.forEach(function(x){h+='<div class="balance-row"><div class="avatar-envelope">'+envSvg+'</div><div class="friend-info"><div class="friend-name">'+x.name+'</div><div class="friend-balance owe-color">you owe <span class="amt">$'+x.amt.toFixed(2)+'</span></div></div></div>'});
+    h+='</div><div class="owed-col" id="owedListCol">';
+    YOU_ARE_OWED.forEach(function(x){h+='<div class="balance-row"><div class="avatar-envelope">'+envSvg+'</div><div class="friend-info"><div class="friend-name">'+x.name+'</div><div class="friend-balance">owes you <span class="amt">$'+x.amt.toFixed(2)+'</span></div></div></div>'});
+    h+='</div></div>';
+    // Chart
+    h+='<div class="view-container" id="chartView" style="display:none;width:100%"><div class="owe-col" style="padding-right:10px">';
+    YOU_OWE.forEach(function(x){var pct=Math.max(25,(x.amt/maxOwe)*100);h+='<div class="chart-bar orange" style="width:'+pct+'%"><span class="bar-name">'+x.name+'</span><span class="bar-amt">$'+x.amt.toFixed(2)+'</span></div>'});
+    h+='</div><div class="owed-col" style="padding-left:10px;border-left:1px solid #eee">';
+    YOU_ARE_OWED.forEach(function(x){var pct=Math.max(25,(x.amt/maxOwed)*100);h+='<div class="chart-bar green" style="width:'+pct+'%"><span class="bar-name">'+x.name+'</span><span class="bar-amt">$'+x.amt.toFixed(2)+'</span></div>'});
+    h+='</div></div>';
+    h+='</div>';
+    document.getElementById('center_column').innerHTML=h;
+
+    // Right sidebar
+    document.getElementById('right_sidebar_content').innerHTML='<h2>Splitwise on the go</h2><div class="desc">Get the free Splitwise app and add IOUs from anywhere:</div>'+
+        '<a href="#" class="badge-link"><svg width="175" height="52" viewBox="0 0 175 52"><rect width="175" height="52" rx="8" fill="#000"/><text x="90" y="16" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="9" letter-spacing=".5">Download on the</text><text x="90" y="36" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="20" font-weight="700">App Store</text><g transform="translate(18,12)" fill="#fff"><path d="M12.3 3c.7-.9 1.1-2 1-3-1 .1-2.3.7-3 1.5-.6.8-1.2 1.9-1 3 1.1.1 2.3-.6 3-1.5zM15 7.8c0-2.2 1.8-3.2 1.8-3.3-1-1.5-2.6-1.7-3.1-1.7-1.3-.1-2.6.8-3.3.8s-1.7-.8-2.8-.8c-1.5 0-2.9.9-3.6 2.2-1.5 2.7-.4 6.6 1.1 8.8.7 1.1 1.6 2.3 2.8 2.2 1.1 0 1.5-.7 2.9-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.9-1.2 1.2-2.4 1.2-2.5 0 0-2.3-.9-2.6-3.5z" transform="scale(.9)"/></g></svg></a>'+
+        '<a href="#" class="badge-link"><svg width="175" height="52" viewBox="0 0 175 52"><rect width="175" height="52" rx="8" fill="#000"/><text x="98" y="16" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="9" letter-spacing=".3">GET IT ON</text><text x="98" y="37" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="18" font-weight="700">Google Play</text><g transform="translate(18,12)"><path d="M4 2l18 12L4 26V2z" fill="#48d1a0"/><path d="M4 2l12 8.5L4 14V2z" fill="#34a853"/><path d="M4 14l12-3.5L22 14l-18 12V14z" fill="#fbbc04"/><path d="M16 10.5L22 14l-18 12V14l12-3.5z" fill="#ea4335" opacity=".7"/></g></svg></a>';
+}
+
+function showList(){document.getElementById('listView').style.display='flex';document.getElementById('chartView').style.display='none';document.getElementById('listBtn').classList.add('active');document.getElementById('chartBtn').classList.remove('active')}
+function showChart(){document.getElementById('listView').style.display='none';document.getElementById('chartView').style.display='flex';document.getElementById('chartBtn').classList.add('active');document.getElementById('listBtn').classList.remove('active')}
+
+// ============ GROUP DETAIL PAGE ============
+function renderGroupPage(idx){
+    var name=GROUPS[idx],icon=GROUP_ICONS[idx],color=GROUP_COLORS[idx];
+    document.title=name+' · Splitwise';
+    var memberCount=Math.floor(Math.random()*6)+2;
+    var h='<div class="detail-header"><div class="group-avatar" style="background:'+color+'">'+icon+'</div><div class="group-info"><h1>'+name+'</h1><div class="sub">'+memberCount+' people</div></div><div class="actions"><a class="btn btn-orange" onclick="openModal(event,\'group\','+idx+')">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    // Expenses for this group
+    var groupExps=savedExpenses.filter(function(e){return e.context==='group'&&e.contextIdx===idx});
+    h+='<div class="detail-body" style="text-align:'+(groupExps.length?'left':'center')+'">';
+    if(groupExps.length===0){
+        h+='<h2>You have not added any expenses yet</h2><p>To add a new expense, click the orange "Add an expense" button.</p>';
+    } else {
+        groupExps.forEach(function(e){
+            h+='<div class="expense-list-item"><div class="exp-icon" style="background:'+e.catBg+'"><span>'+e.catEmoji+'</span></div><div class="exp-info"><div class="exp-desc">'+e.desc+'</div><div class="exp-meta">'+e.date+'</div></div><div class="exp-amt"><div class="paid">you paid $'+parseFloat(e.amt).toFixed(2)+'</div><div class="lent">you lent $'+(parseFloat(e.amt)/Math.max(e.users.length+1,2)).toFixed(2)+'</div></div></div>';
+        });
+    }
+    h+='</div>';
+    document.getElementById('center_column').innerHTML=h;
+    // Right sidebar for group
+    document.getElementById('right_sidebar_content').innerHTML='<div class="detail-right"><h3>GROUP BALANCES</h3><div class="balance-item"><div class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ddd"/><circle cx="12" cy="9" r="3" fill="#fff"/><path d="M12 14c-3.5 0-5.5 1.8-5.5 3.5V19h11v-1.5c0-1.7-2-3.5-5.5-3.5z" fill="#fff"/></svg></div><div><div style="font-weight:700;font-size:14px">Test User</div><div class="settled">settled up</div></div></div><a href="#" class="view-link">View details »</a></div>';
+}
+
+// ============ FRIEND DETAIL PAGE ============
+function renderFriendPage(idx){
+    var name=FRIENDS[idx];
+    document.title=name+' · Splitwise';
+    var h='<div class="detail-header"><div class="group-avatar" style="background:#ddd;font-size:20px">👤</div><div class="group-info"><h1>'+name+'</h1><div class="sub"></div></div><div class="actions"><a class="btn btn-orange" onclick="openModal(event,\'friend\','+idx+')">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    var friendExps=savedExpenses.filter(function(e){return e.context==='friend'&&e.contextIdx===idx});
+    // Also check if this friend appears in owe/owed lists
+    var oweEntry=YOU_OWE.find(function(x){return x.name===name});
+    var owedEntry=YOU_ARE_OWED.find(function(x){return x.name===name});
+    h+='<div class="detail-body" style="text-align:'+(friendExps.length?'left':'center')+'">';
+    if(friendExps.length===0 && !oweEntry && !owedEntry){
+        h+='<h2>You have not added any expenses yet</h2><p>To add a new expense, click the orange "Add an expense" button.</p>';
+    } else {
+        if(oweEntry) h+='<div class="expense-list-item"><div class="exp-icon" style="background:#ffe0d6">💸</div><div class="exp-info"><div class="exp-desc">Outstanding balance</div><div class="exp-meta">Current</div></div><div class="exp-amt"><div class="paid" style="color:#ff652f;font-weight:700">you owe $'+oweEntry.amt.toFixed(2)+'</div></div></div>';
+        if(owedEntry) h+='<div class="expense-list-item"><div class="exp-icon" style="background:#d6f0e6">💰</div><div class="exp-info"><div class="exp-desc">Outstanding balance</div><div class="exp-meta">Current</div></div><div class="exp-amt"><div class="lent">owes you $'+owedEntry.amt.toFixed(2)+'</div></div></div>';
+        friendExps.forEach(function(e){
+            h+='<div class="expense-list-item"><div class="exp-icon" style="background:'+e.catBg+'"><span>'+e.catEmoji+'</span></div><div class="exp-info"><div class="exp-desc">'+e.desc+'</div><div class="exp-meta">'+e.date+'</div></div><div class="exp-amt"><div class="paid">you paid $'+parseFloat(e.amt).toFixed(2)+'</div><div class="lent">you lent $'+(parseFloat(e.amt)/Math.max(e.users.length+1,2)).toFixed(2)+'</div></div></div>';
+        });
+    }
+    h+='</div>';
+    document.getElementById('center_column').innerHTML=h;
+    document.getElementById('right_sidebar_content').innerHTML='<div class="detail-right"><h3>YOUR BALANCE</h3>'+(oweEntry?'<div style="font-size:16px;color:#ff652f;font-weight:700">you owe $'+oweEntry.amt.toFixed(2)+'</div>':(owedEntry?'<div style="font-size:16px;color:#5bc5a7;font-weight:700">owes you $'+owedEntry.amt.toFixed(2)+'</div>':'<div class="settled">settled up</div>'))+'</div>';
+}
+
+// ============ CATEGORIES ============
+function buildCatList(){
+    var html='';CATEGORIES.forEach(function(c,i){
+        html+='<div class="cat-item" data-idx="'+i+'" onclick="toggleCat('+i+')"><span>'+c.emoji+' '+c.name+'</span><span class="chev">›</span></div>';
+        c.subs.forEach(function(s,j){
+            html+='<div class="cat-sub cat-sub-'+i+'" onclick="pickCat('+i+','+j+')">'+s+'</div>';
+        });
+    });document.getElementById('catList').innerHTML=html;
+}
+var openCatIdx=-1;
+function toggleCat(idx){
+    document.querySelectorAll('.cat-item').forEach(function(el){el.classList.remove('parent-open')});
+    if(openCatIdx>=0)document.querySelectorAll('.cat-sub-'+openCatIdx).forEach(function(el){el.classList.remove('show')});
+    if(openCatIdx===idx){openCatIdx=-1;return}
+    document.querySelector('.cat-item[data-idx="'+idx+'"]').classList.add('parent-open');
+    document.querySelectorAll('.cat-sub-'+idx).forEach(function(el){el.classList.add('show')});
+    openCatIdx=idx;
+}
+var selectedCat=null;
+function pickCat(catIdx,subIdx){
+    var c=CATEGORIES[catIdx],sub=c.subs[subIdx],bg=c.colors[subIdx%c.colors.length];
+    selectedCat={cat:c.name,sub:sub,emoji:c.emoji,bg:bg};
+    document.getElementById('catIconBox').style.background=bg;
+    document.getElementById('catIconBox').style.borderColor=bg;
+    document.getElementById('catEmoji').textContent=c.emoji;
+    closeCatPanel();
+    logEvent('cat-select',c.name+' > '+sub);
+}
+
+// ============ NAV DROPDOWN ============
+function toggleMenu(e){e.preventDefault();e.stopPropagation();document.getElementById('userMenuDD').classList.toggle('open')}
+document.addEventListener('click',function(e){if(!e.target.closest('#userDropdown'))document.getElementById('userMenuDD').classList.remove('open')});
+
+// ============ MODAL ============
+var addedUsers=[];
+var modalContext=null; // {type:'group'|'friend', idx:N} or null
+
+function openModal(e,contextType,contextIdx){
+    if(e)e.preventDefault();
+    addedUsers=[];selectedCat=null;
+    modalContext=contextType?{type:contextType,idx:contextIdx}:null;
+    document.getElementById('chipArea').innerHTML='';
+    var wf=document.getElementById('withField');wf.value='';wf.style.display='';
+    document.getElementById('expForm').classList.remove('visible');
+    document.getElementById('notesBtn').classList.remove('highlight');
+    document.getElementById('catIconBox').style.background='#f5f5f5';
+    document.getElementById('catIconBox').style.borderColor='#ddd';
+    document.getElementById('catEmoji').textContent='📄';
+    closeCatPanel();closeNotesPanel();closeAC();
+    document.getElementById('descField').value='';
+    document.getElementById('amtField').value='0.00';
+    document.getElementById('perPersonText').textContent='($0.00/person)';
+    // Auto-add context
+    if(modalContext){
+        if(modalContext.type==='group') addUserChip(GROUPS[modalContext.idx]);
+        else if(modalContext.type==='friend') addUserChip(FRIENDS[modalContext.idx]);
+    }
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(function(){wf.focus()},50);
+    logEvent('modal-open','add-expense');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');closeCatPanel();closeNotesPanel();closeAC()}
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// ============ AUTOCOMPLETE ============
+var acDropdown=document.getElementById('acDropdown');
+function doSearch(query){
+    if(!query||query.length<1){closeAC();return}
+    var q=query.toLowerCase();
+    var mg=GROUPS.filter(function(g){return g.toLowerCase().indexOf(q)>=0&&addedUsers.indexOf(g)<0});
+    var mf=FRIENDS.filter(function(f){return f.toLowerCase().indexOf(q)>=0&&addedUsers.indexOf(f)<0});
+    if(mg.length===0&&mf.length===0){
+        if(query.indexOf('@')>0){acDropdown.innerHTML='<div class="ac-item" onclick="addUserChip(\''+query.replace(/'/g,"\\'")+'\')"><span style="margin-right:4px">✉️</span>'+query+'</div>';acDropdown.classList.add('open')}else closeAC();return;
+    }
+    var html='';
+    if(mg.length>0){html+='<div class="ac-section-label">Groups</div>';mg.slice(0,5).forEach(function(g){html+='<div class="ac-item" onclick="addUserChip(\''+g.replace(/'/g,"\\'")+'\')"><span style="margin-right:4px">👥</span>'+hlMatch(g,q)+'</div>'})}
+    if(mf.length>0){html+='<div class="ac-section-label">Friends</div>';mf.slice(0,8).forEach(function(f){html+='<div class="ac-item" onclick="addUserChip(\''+f.replace(/'/g,"\\'")+'\')"><span style="margin-right:4px">👤</span>'+hlMatch(f,q)+'</div>'})}
+    acDropdown.innerHTML=html;acDropdown.classList.add('open');
+}
+function hlMatch(t,q){var i=t.toLowerCase().indexOf(q);if(i<0)return t;return t.substring(0,i)+'<strong>'+t.substring(i,i+q.length)+'</strong>'+t.substring(i+q.length)}
+function closeAC(){acDropdown.classList.remove('open');acDropdown.innerHTML=''}
+
+function addUserChip(name){
+    closeAC();if(addedUsers.indexOf(name)>=0)return;
+    addedUsers.push(name);renderChips();
+    document.getElementById('withField').value='';
+    document.getElementById('expForm').classList.add('visible');
+    updatePerPerson();logEvent('user-added',name);
+}
+function removeChip(name){
+    addedUsers=addedUsers.filter(function(u){return u!==name});renderChips();
+    if(addedUsers.length===0){document.getElementById('expForm').classList.remove('visible');closeCatPanel();closeNotesPanel()}
+    updatePerPerson();document.getElementById('withField').focus();
+}
+function renderChips(){
+    var h='';addedUsers.forEach(function(name){
+        h+='<span class="user-chip"><span class="chip-avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#bbb"/><circle cx="12" cy="9" r="3" fill="#fff"/><path d="M12 14c-3.5 0-5.5 1.8-5.5 3.5V19h11v-1.5c0-1.7-2-3.5-5.5-3.5z" fill="#fff"/></svg></span> '+name+' <button class="chip-x" onclick="removeChip(\''+name.replace(/'/g,"\\'")+'\')">&times;</button></span> ';
+    });document.getElementById('chipArea').innerHTML=h;
+}
+function updatePerPerson(){
+    var v=parseFloat(document.getElementById('amtField').value)||0;
+    var p=addedUsers.length+1;
+    document.getElementById('perPersonText').textContent='($'+(v/p).toFixed(2)+'/person)';
+}
+
+function openCatPanel(){closeNotesPanel();document.getElementById('catPanel').classList.add('open');document.getElementById('notesBtn').classList.remove('highlight')}
+function closeCatPanel(){document.getElementById('catPanel').classList.remove('open');if(openCatIdx>=0){document.querySelectorAll('.cat-sub-'+openCatIdx).forEach(function(el){el.classList.remove('show')});document.querySelectorAll('.cat-item').forEach(function(el){el.classList.remove('parent-open')});openCatIdx=-1}}
+function openNotesPanel(){closeCatPanel();document.getElementById('notesPanel').classList.add('open');document.getElementById('notesBtn').classList.add('highlight')}
+function closeNotesPanel(){document.getElementById('notesPanel').classList.remove('open');document.getElementById('notesBtn').classList.remove('highlight')}
+
+function saveExpense(){
+    // Validation
+    if(addedUsers.length===0){
+        alert('Please add at least one friend or group to split this expense with.');
+        return;
+    }
+    if(!selectedCat){
+        alert('Please select a category for this expense.');
+        return;
+    }
+    var amt=parseFloat(document.getElementById('amtField').value);
+    if(!amt||amt<=0){
+        alert('Please enter a valid amount greater than $0.00.');
+        return;
+    }
+    var desc=document.getElementById('descField').value||'Untitled expense';
+    var exp={
+        desc:desc,amt:amt.toFixed(2),users:addedUsers.slice(),
+        catEmoji:selectedCat.emoji,catBg:selectedCat.bg,catName:selectedCat.cat+' > '+selectedCat.sub,
+        date:document.getElementById('dateBtn').textContent.trim(),
+        context:modalContext?modalContext.type:null,
+        contextIdx:modalContext?modalContext.idx:null
+    };
+    savedExpenses.push(exp);
+    logEvent('expense-saved',exp);
+    closeModal();
+
+    // Re-render current page to show new expense
+    if(currentPage==='group'&&modalContext&&modalContext.type==='group') renderGroupPage(modalContext.idx);
+    else if(currentPage==='friend'&&modalContext&&modalContext.type==='friend') renderFriendPage(modalContext.idx);
+    else if(currentPage==='dashboard') renderDashboard();
+
+    alert("Test completed successfully. Please proceed to next test.");
+}
+// ============ INIT ============
+
+document.addEventListener('DOMContentLoaded',function(){
+    buildSidebar();buildCatList();navTo('dashboard');
+    var wf=document.getElementById('withField');
+    wf.addEventListener('input',function(){doSearch(wf.value.trim())});
+    wf.addEventListener('keydown',function(e){if(e.key==='Enter'&&wf.value.trim()){addUserChip(wf.value.trim());wf.value='';closeAC()}});
+    document.getElementById('amtField').addEventListener('input',updatePerPerson);
+});
+
+// ============ LOGGING ============
+function logEvent(a,t,x){var e={ts:new Date().toISOString(),action:a,target:t,extra:x||null};/*console.log('[LOG]',JSON.stringify(e))*/}
+document.addEventListener('click',function(e){var el=e.target.closest('[data-log]');if(el)logEvent('click',el.getAttribute('data-log'))});
+logEvent('page-load','dashboard');
+</script>
+</body>
+</html>

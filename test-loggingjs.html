@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>Test Logging</title>
+<script src="logging.js"></script>
+</head>
+
+<body>
+
+<script>
+window.TRIAL_ID = "trial-001";
+window.SYSTEM_TYPE = "web";
+window.USER_TYPE = "participant";
+
+function sendCustomEvent() {
+	console.log('sendCustomEvent');
+	document.dispatchEvent(new CustomEvent('myevent', { detail: {
+		eventName: 'Event 1',
+		event_type: 'custom_dispatch',
+		info: {'key1': 'val1', 'key2': 'val2'}
+	}}));
+}
+document.addEventListener('myevent', loggingjs.logEvent, true);
+
+function sendCustomEvent2() {
+	console.log('sendCustomEvent2');
+	loggingjs.logEvent(null, 'myevent2', {
+		event_type: 'direct_call',
+		info: {'key1': 'val1', 'key2': 'val2'}
+	});
+}
+</script>
+
+<div id="label">Label</div>
+<input id="inText" type="text"/>
+<input id="btn" value="Send Custom Event" type="button" onclick="sendCustomEvent()"/>
+<input id="btn2" value="Send Custom Event 2" type="button" onclick="sendCustomEvent2()"/>
+
+</body>
+
+</html>

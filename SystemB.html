@@ -291,6 +291,14 @@ b.caret{display:inline-block;width:0;height:0;border-top:4px solid;border-right:
 </div>
 
 <script>
+// ============ QUERY PARAMS ============
+(function(){
+    var params=new URLSearchParams(window.location.search);
+    window.USER_ID=params.get('participant_id')||'';
+    window.TRIAL_ID=params.get('trial_id')||'';
+    window.SYSTEM_TYPE='SystemB';
+})();
+
 // ============ DATA ============
 var GROUPS=['Apartment 4B','Japan Trip 2026','Household Bills','Bali Getaway','Friday Dinners','Office Snacks','Seoul Weekend','Condo Utilities','Brunch Club','Europe Backpacking','Wedding Fund','Game Night Crew','Bangkok Trip','Gym Membership','Potluck Group','Ski Trip 2026','Streaming Subs','Taco Tuesdays','Road Trip CA','Book Club Expenses'];
 var GROUP_ICONS=['🏠','✈️','🏠','✈️','🍕','🏠','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠','🍕','✈️','🏠'];
@@ -365,7 +373,7 @@ function renderDashboard(){
     var maxOwe=Math.max.apply(null,YOU_OWE.map(function(x){return x.amt}));
     var maxOwed=Math.max.apply(null,YOU_ARE_OWED.map(function(x){return x.amt}));
 
-    var h='<div class="page-header"><h1>Dashboard</h1><div class="actions"><a class="btn btn-orange" onclick="openModal(event)">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    var h='<div class="page-header"><h1>Dashboard</h1><div class="actions"><a class="btn btn-orange" data-log="add-expense-dashboard" onclick="openModal(event)">Add an expense</a><a class="btn btn-mint" data-log="settle-up-dashboard">Settle up</a></div></div>';
     h+='<div class="balance-summary"><div class="balance-block"><div class="label">total balance</div><div class="value '+(net>=0?'positive':'negative')+'">'+(net>=0?'+ ':'- ')+'$'+Math.abs(net).toFixed(2)+'</div></div>';
     h+='<div class="balance-block"><div class="label">you owe</div><div class="value negative">$'+totalOwe.toFixed(2)+'</div></div>';
     h+='<div class="balance-block"><div class="label">you are owed</div><div class="value positive">$'+totalOwed.toFixed(2)+'</div></div></div>';
@@ -392,15 +400,15 @@ function renderDashboard(){
         '<a href="#" class="badge-link"><svg width="175" height="52" viewBox="0 0 175 52"><rect width="175" height="52" rx="8" fill="#000"/><text x="98" y="16" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="9" letter-spacing=".3">GET IT ON</text><text x="98" y="37" text-anchor="middle" fill="#fff" font-family="Lato,sans-serif" font-size="18" font-weight="700">Google Play</text><g transform="translate(18,12)"><path d="M4 2l18 12L4 26V2z" fill="#48d1a0"/><path d="M4 2l12 8.5L4 14V2z" fill="#34a853"/><path d="M4 14l12-3.5L22 14l-18 12V14z" fill="#fbbc04"/><path d="M16 10.5L22 14l-18 12V14l12-3.5z" fill="#ea4335" opacity=".7"/></g></svg></a>';
 }
 
-function showList(){document.getElementById('listView').style.display='flex';document.getElementById('chartView').style.display='none';document.getElementById('listBtn').classList.add('active');document.getElementById('chartBtn').classList.remove('active')}
-function showChart(){document.getElementById('listView').style.display='none';document.getElementById('chartView').style.display='flex';document.getElementById('chartBtn').classList.add('active');document.getElementById('listBtn').classList.remove('active')}
+function showList(){document.getElementById('listView').style.display='flex';document.getElementById('chartView').style.display='none';document.getElementById('listBtn').classList.add('active');document.getElementById('chartBtn').classList.remove('active');logEvent('toggle-view','list')}
+function showChart(){document.getElementById('listView').style.display='none';document.getElementById('chartView').style.display='flex';document.getElementById('chartBtn').classList.add('active');document.getElementById('listBtn').classList.remove('active');logEvent('toggle-view','chart')}
 
 // ============ GROUP DETAIL PAGE ============
 function renderGroupPage(idx){
     var name=GROUPS[idx],icon=GROUP_ICONS[idx],color=GROUP_COLORS[idx];
     document.title=name+' · Splitwise';
     var memberCount=Math.floor(Math.random()*6)+2;
-    var h='<div class="detail-header"><div class="group-avatar" style="background:'+color+'">'+icon+'</div><div class="group-info"><h1>'+name+'</h1><div class="sub">'+memberCount+' people</div></div><div class="actions"><a class="btn btn-orange" onclick="openModal(event,\'group\','+idx+')">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    var h='<div class="detail-header"><div class="group-avatar" style="background:'+color+'">'+icon+'</div><div class="group-info"><h1>'+name+'</h1><div class="sub">'+memberCount+' people</div></div><div class="actions"><a class="btn btn-orange" data-log="add-expense-group" onclick="openModal(event,\'group\','+idx+')">Add an expense</a><a class="btn btn-mint" data-log="settle-up-group">Settle up</a></div></div>';
     // Expenses for this group
     var groupExps=savedExpenses.filter(function(e){return e.context==='group'&&e.contextIdx===idx});
     h+='<div class="detail-body" style="text-align:'+(groupExps.length?'left':'center')+'">';
@@ -421,7 +429,7 @@ function renderGroupPage(idx){
 function renderFriendPage(idx){
     var name=FRIENDS[idx];
     document.title=name+' · Splitwise';
-    var h='<div class="detail-header"><div class="group-avatar" style="background:#ddd;font-size:20px">👤</div><div class="group-info"><h1>'+name+'</h1><div class="sub"></div></div><div class="actions"><a class="btn btn-orange" onclick="openModal(event,\'friend\','+idx+')">Add an expense</a><a class="btn btn-mint">Settle up</a></div></div>';
+    var h='<div class="detail-header"><div class="group-avatar" style="background:#ddd;font-size:20px">👤</div><div class="group-info"><h1>'+name+'</h1><div class="sub"></div></div><div class="actions"><a class="btn btn-orange" data-log="add-expense-friend" onclick="openModal(event,\'friend\','+idx+')">Add an expense</a><a class="btn btn-mint" data-log="settle-up-friend">Settle up</a></div></div>';
     var friendExps=savedExpenses.filter(function(e){return e.context==='friend'&&e.contextIdx===idx});
     // Also check if this friend appears in owe/owed lists
     var oweEntry=YOU_OWE.find(function(x){return x.name===name});
@@ -502,7 +510,7 @@ function openModal(e,contextType,contextIdx){
     setTimeout(function(){wf.focus()},50);
     logEvent('modal-open','add-expense');
 }
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');closeCatPanel();closeNotesPanel();closeAC()}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');closeCatPanel();closeNotesPanel();closeAC();logEvent('modal-close','add-expense')}
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
 // ============ AUTOCOMPLETE ============
@@ -548,7 +556,7 @@ function updatePerPerson(){
 
 function openCatPanel(){closeNotesPanel();document.getElementById('catPanel').classList.add('open');document.getElementById('notesBtn').classList.remove('highlight')}
 function closeCatPanel(){document.getElementById('catPanel').classList.remove('open');if(openCatIdx>=0){document.querySelectorAll('.cat-sub-'+openCatIdx).forEach(function(el){el.classList.remove('show')});document.querySelectorAll('.cat-item').forEach(function(el){el.classList.remove('parent-open')});openCatIdx=-1}}
-function openNotesPanel(){closeCatPanel();document.getElementById('notesPanel').classList.add('open');document.getElementById('notesBtn').classList.add('highlight')}
+function openNotesPanel(){closeCatPanel();document.getElementById('notesPanel').classList.add('open');document.getElementById('notesBtn').classList.add('highlight');logEvent('notes-open','add-image-notes')}
 function closeNotesPanel(){document.getElementById('notesPanel').classList.remove('open');document.getElementById('notesBtn').classList.remove('highlight')}
 
 function saveExpense(){

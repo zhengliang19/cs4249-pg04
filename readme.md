@@ -2,7 +2,7 @@
 
 Group 04 project for **CS4249 — Phenomena and Theories of Human-Computer Interaction** (NUS).
 
-This repo hosts a small web-based user study comparing two interface variants (**System A** and **System B**). Participants land on a launcher page, are routed to one of the two systems, and their interactions are logged and pushed to a Google Form for later analysis.
+This repo hosts a small web-based user study comparing two splitwise interface variants (**System A** and **System B**). Participants land on a launcher page, are routed to one of the two systems, and their interactions are logged and pushed to a Google Form for later analysis.
 
 ## Live site
 
@@ -45,4 +45,3 @@ Then drop the generated `sendNetworkLog(...)` function into `logging.js` (or inc
 ## Notes
 
 - Logs are sent by setting an `Image().src` to the form’s `formResponse` URL, which sidesteps CORS at the cost of being fire-and-forget — check the linked Google Form / Sheet to confirm entries arrived.
-- `googlesender.py` is adapted from the public `goo.gl/jUkahv` snippet.
